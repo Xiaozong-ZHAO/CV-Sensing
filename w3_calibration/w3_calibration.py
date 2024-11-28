@@ -50,7 +50,7 @@ print("\nDistortion Coefficients:\n", dist_coeffs)
 np.savez('calibration_data.npz', camera_matrix=camera_matrix, dist_coeffs=dist_coeffs, rvecs=rvecs, tvecs=tvecs)
 
 # Step 7: Use the calibration results to undistort an image
-img = cv2.imread('./calibration_images/calibration_image_02.jpg')  # Replace with an image to undistort
+img = cv2.imread('./calibration_images/calibration_image_15.jpg')  # Replace with an image to undistort
 # img = cv2.cvtColor()
 h, w = img.shape[:2]
 new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coeffs, (w, h), 1, (w, h))
