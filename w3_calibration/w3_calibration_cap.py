@@ -11,12 +11,11 @@ exit_key = 'q'  # Key to exit the program
 os.makedirs(output_folder, exist_ok=True)
 
 # Open the webcam (use the appropriate index if multiple cameras are connected)
-cap = cv2.VideoCapture(0)  # Change the index to 1, 2, etc., if needed
+cap = cv2.VideoCapture(1)  # Change the index to 1, 2, etc., if needed
 
 if not cap.isOpened():
     print("Error: Unable to access the camera.")
     exit()
-
 print(f"Press '{capture_key}' to capture an image and save it.")
 print(f"Press '{exit_key}' to quit.")
 
