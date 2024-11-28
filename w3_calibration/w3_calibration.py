@@ -31,11 +31,11 @@ for fname in images:
         imgpoints.append(corners)  # Add image points
 
         # Optional: Draw and display the corners for visualization
-        cv2.drawChessboardCorners(img, chessboard_size, corners, ret)
-        cv2.imshow('Chessboard', img)
-        cv2.waitKey(500)
-        output_fname = fname.replace('.jpg', '_corners_detected.jpg')  # Adjust extension if necessary
-        cv2.imwrite(output_fname, img)
+        # cv2.drawChessboardCorners(img, chessboard_size, corners, ret)
+        # cv2.imshow('Chessboard', img)
+        # cv2.waitKey(500)
+        # output_fname = fname.replace('.jpg', '_corners_detected.jpg')  # Adjust extension if necessary
+        # cv2.imwrite(output_fname, img)
 
 cv2.destroyAllWindows()
 
