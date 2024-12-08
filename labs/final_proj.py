@@ -1,8 +1,5 @@
 import cv2
-import time
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy.io as sio
 import random
 
 def nothing(x):
@@ -43,61 +40,56 @@ while True:
     # Apply the mask to the original image
     result = cv2.bitwise_and(img, img, mask=mask)
 
-    # Display the mask and the result
-    cv2.imshow("Mask", mask)
-    cv2.imshow("Result", result)
+    # Convert the mask to grayscale
+    gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+
+    # Apply GaussianBlur to smooth the image
+    blurred = cv2.GaussianBlur(gray, (9, 9), 2)
+
+    # Use Canny edge detection to find edges
+    edges = cv2.Canny(blurred, threshold1=50, threshold2=150)
+
+    # Find contours from the edges
+    contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Draw each contour with a different color
+    contour_image = np.zeros_like(img)
+    for contour in contours:
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        cv2.drawContours(contour_image, [contour], -1, color, thickness=2)
+
+    # Detect circles using Hough Circle Transform on edges
+    circles = cv2.HoughCircles(
+        edges,
+        cv2.HOUGH_GRADIENT,
+        dp=1,                # Inverse ratio of accumulator resolution
+        minDist=150,          # Minimum distance between detected circles
+        param1=50,           # Upper threshold for Canny edge detection
+        param2=60,           # Accumulator threshold for circle detection
+        minRadius=100,        # Minimum circle radius
+        maxRadius=300        # Maximum circle radius
+    )
+
+    # Draw detected circles on the original image
+    hough_circle_image = edges.copy()
+    hough_circle_image = cv2.cvtColor(hough_circle_image, cv2.COLOR_GRAY2BGR)
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            # Draw the outer circle
+            cv2.circle(hough_circle_image, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            # Draw the center of the circle
+            cv2.circle(hough_circle_image, (i[0], i[1]), 2, (0, 0, 255), 3)
+
+    # Display the mask, result, edges, contours, and Hough Circles
+    # cv2.imshow("Mask", mask)
+    # cv2.imshow("Result", result)
+    # cv2.imshow("Edges", edges)
+    cv2.imshow("Contours", contour_image)
+    cv2.imshow("Hough Circles", hough_circle_image)
 
     # Break the loop when 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cv2.destroyAllWindows()
-
-
-
-# # Load the image
-# img = cv2.imread('dataset/images/000001.png')
-# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-
-# # Apply GaussianBlur to smooth the image
-# blurred = cv2.GaussianBlur(gray, (9, 9), 2)
-
-# # Use Canny edge detection to find edges
-# edges = cv2.Canny(blurred, threshold1=50, threshold2=150)
-
-# # Find contours from the edges
-# contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-# # Create a mask from the contours (optional, for better circle detection)
-# mask = np.zeros_like(gray)
-# cv2.drawContours(mask, contours, -1, (255, 255, 255), thickness=-1)
-
-# # Use the mask to refine the input for HoughCircles
-# masked_blurred = cv2.bitwise_and(blurred, blurred, mask=mask)
-
-# # Detect circles using Hough Circle Transform
-# circles = cv2.HoughCircles(
-#     masked_blurred,
-#     cv2.HOUGH_GRADIENT,
-#     dp=1,                # Inverse ratio of the accumulator resolution
-#     minDist=20,          # Minimum distance between detected circles
-#     param1=50,           # Upper threshold for Canny edge detection
-#     param2=30,           # Accumulator threshold for circle detection
-#     minRadius=10,        # Minimum circle radius
-#     maxRadius=100        # Maximum circle radius
-# )
-
-# # Draw the detected circles on the original image
-# if circles is not None:
-#     circles = np.uint16(np.around(circles))
-#     for i in circles[0, :]:
-#         # Draw the outer circle
-#         cv2.circle(masked_blurred, (i[0], i[1]), i[2], (0, 255, 0), 2)
-#         # Draw the center of the circle
-#         cv2.circle(masked_blurred, (i[0], i[1]), 2, (0, 0, 255), 3)
-
-# # Display the original image with detected circles
-# plt.figure(figsize=(10, 10))
-# plt.imshow(cv2.cvtColor(masked_blurred, cv2.COLOR_BGR2RGB))
-# plt.axis('off')
-# plt.show()
